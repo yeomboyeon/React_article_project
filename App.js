@@ -1,15 +1,24 @@
 import React from "react";
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+// 도메인이 다른 포트 번호가 다른데 쿠키 공유가 안되는데 공유를 가능하게 해줌
+axios.defaults.withCredentials = true;
 
 /**
  * 1. react router dom 설정
  * 2. context provider 설정
- *
+ * 3. 회원가입 설정
+ * 4. 서버 연동
+ * 5. 로그인 설정
+ * 6. 세션 저장
  */
 
 /*회원가입 */
 function Join() {
+  const navigation = useNavigate();
+
   const [data, setData] = React.useState({
     id: "",
     pw: "",
@@ -30,8 +39,25 @@ function Join() {
     setData(cloneData);
   };
 
-  const 회원가입 = () => {
+  const 회원가입 = async () => {
     // 여기에 입력한 값이 기억해야 한다.
+    await axios({
+      url: "http://localhost:4000/join",
+      method: "POST", // GET : 가져올때, POST: 생성할때
+      data: data,
+    })
+      .then((res) => {
+        // console.log(res.data);
+        const { code, message } = res.data;
+
+        if (code === "success") {
+          alert(message);
+          navigation("/login");
+        }
+      })
+      .catch((e) => {
+        console.log("join 에러", e);
+      });
     console.log(data); // 입력된 값이 저장됨을 확인
   };
 
@@ -46,8 +72,42 @@ function Join() {
   );
 }
 
+/*로그인*/
 function Login() {
-  return <div>Login</div>;
+  const [data, setData] = React.useState({
+    id: "",
+    pw: "",
+  });
+
+  const 데이터변경 = (event) => {
+    const name = event.target.name;
+    const cloneData = { ...data };
+    cloneData[name] = event.target.value;
+    setData(cloneData);
+  };
+
+  const 로그인 = async () => {
+    await axios({
+      url: "http://localhost:4000/login",
+      method: "POST",
+      data: data,
+    })
+      .then((res) => {})
+      .catch((e) => {
+        console.log("login 에러", e);
+      });
+    console.log(data);
+  };
+
+  return (
+    <div>
+      <input name="id" onChange={데이터변경} />
+      <input name="pw" onChange={데이터변경} />
+      <button type="button" onClick={로그인}>
+        로그인
+      </button>
+    </div>
+  );
 }
 
 function Main() {

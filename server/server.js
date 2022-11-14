@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+// nodemon 으로 내용 수정 후 저장할 때마다 서버가 재시작됨
+// 이에 따라서 login을 다시 하고서 작동 여부를 확인해야 정상적이 됩니다.
 
 // (1) mysql 연결위한 설정하기
 const mysql = require("mysql2");
@@ -96,6 +98,44 @@ app.get("/", async (req, res) => {
   res.send("안녕 이리로 와야해");
 });
 
+// 메인페이지에 게시글 전체 보여주기
+app.get("/article", async (req, res) => {
+  const article = await 디비실행(`SELECT * FROM article`);
+  // console.log(article);
+
+  res.send(article);
+});
+
+// 게시글 작성
+app.post("/article", async (req, res) => {
+  const { title, body } = req.body;
+  const { loginUser } = req.session;
+
+  const result = {
+    code: "success",
+    message: "작성 완료",
+  };
+
+  if (title === "") {
+    result.code = "fail";
+    result.message = "제목을 작성해주세요";
+  }
+  if (body === "") {
+    result.code = "fail";
+    result.message = "내용을 작성해주세요";
+  }
+  if (result.code === "fail") {
+    res.send(result);
+    return;
+  }
+  // console.log(req.body);
+  // DB 입력 (query 문 입력)
+  /**seq(자동 증가라 안넣어도됨), title, body, user_seq(loginUser 에 데이터) */
+  const query = `INSERT INTO article(title,body,user_seq) VALUES('${title}', '${body}', '${loginUser.seq}')`;
+  await 디비실행(query);
+  res.send(result);
+});
+
 app.post("/join", async (req, res) => {
   // console.log(req.body);
   // post 일때 body로 받음
@@ -131,7 +171,7 @@ app.get("/test", (req, res) => {
   res.send("//");
 });
 
-// (12)
+// (12) 로그인 정보 가져오기
 app.get("/user", (req, res) => {
   res.send(req.session.loginUser);
 });
@@ -151,7 +191,7 @@ app.post("/login", async (req, res) => {
   const 회원 = await 디비실행(
     `SELECT * FROM user WHERE id = '${id}' AND password = '${pw}'`
   );
-  if (회원.length > 0) {
+  if (회원.length === 0) {
     result.code = "error";
     result.message = "회원정보가 존재하지 않습니다.";
     res.send(result);

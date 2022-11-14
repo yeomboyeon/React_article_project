@@ -13,6 +13,8 @@ axios.defaults.withCredentials = true;
  * 4. 서버 연동
  * 5. 로그인 설정
  * 6. 세션 저장
+ * 7. 서버 연동
+ * 8. mysql 연동
  */
 
 /*회원가입 */
@@ -44,7 +46,7 @@ function Join() {
     await axios({
       url: "http://localhost:4000/join",
       method: "POST", // GET : 가져올때, POST: 생성할때
-      data: data,
+      data: data, //  GET : params, POST: data
     })
       .then((res) => {
         // console.log(res.data);
@@ -74,6 +76,8 @@ function Join() {
 
 /*로그인*/
 function Login() {
+  const navigation = useNavigate();
+
   const [data, setData] = React.useState({
     id: "",
     pw: "",
@@ -92,7 +96,15 @@ function Login() {
       method: "POST",
       data: data,
     })
-      .then((res) => {})
+      // (9)
+      .then((res) => {
+        alert(res.data.message);
+
+        if (res.data.code === "success") {
+          window.location.href = "/";
+        }
+        // console.log(res.data);
+      })
       .catch((e) => {
         console.log("login 에러", e);
       });
@@ -117,8 +129,26 @@ function Main() {
 const StoreContext = React.createContext({});
 
 function App() {
+  // (10) 로그인 정보 가져오기
+  const [loginUser, setLoginUser] = React.useState({});
+
+  //(11)서버 새로고침 될 때마다 정보 보내주기
+  const 세션정보가져오기 = async () => {
+    await axios({
+      url: "http://localhost:4000/user",
+    }).then((res) => {
+      console.log(res.data);
+
+      setLoginUser(res.data);
+    });
+  };
+
+  React.useEffect(() => {
+    세션정보가져오기();
+  }, []);
+
   return (
-    <StoreContext.Provider value={{}}>
+    <StoreContext.Provider value={{ loginUser }}>
       <Routes>
         <Route exact path="/" element={<Main />}></Route>
         <Route exact path="/login" element={<Login />}></Route>

@@ -99,11 +99,23 @@ app.get("/", async (req, res) => {
 });
 
 // 메인페이지에 게시글 전체 보여주기
+// 작성자에 user_seq 을 nickname 으로 보여주기
 app.get("/article", async (req, res) => {
-  const article = await 디비실행(`SELECT * FROM article`);
+  const query = `SELECT * FROM article, user WHERE article.user_seq = user.seq`;
+  const article = await 디비실행(query);
   // console.log(article);
 
   res.send(article);
+});
+
+// 게시판 상세정보 가져오기
+app.get("/article_row", async (req, res) => {
+  const { seq } = req.query;
+  const query = `SELECT * FROM article WHERE seq = '${seq}'`;
+  const article = await 디비실행(query);
+  // console.log(article);
+
+  res.send(article[0]);
 });
 
 // 게시글 작성

@@ -98,6 +98,17 @@ app.get("/", async (req, res) => {
   res.send("안녕 이리로 와야해");
 });
 
+// 게시판 상세정보 가져오기
+app.get("/article_row", async (req, res) => {
+  const { seq } = req.query;
+  const query = `SELECT * FROM article WHERE seq = '${seq}'`;
+  const reply_query = `SELECT * FROM article WHERE seq = '${seq}'`;
+  const article = await 디비실행(query);
+  // console.log(article);
+
+  res.send(article[0]);
+});
+
 // 메인페이지에 게시글 전체 보여주기
 // 작성자에 user_seq 을 nickname 으로 보여주기
 app.get("/article", async (req, res) => {
@@ -108,14 +119,31 @@ app.get("/article", async (req, res) => {
   res.send(article);
 });
 
-// 게시판 상세정보 가져오기
-app.get("/article_row", async (req, res) => {
-  const { seq } = req.query;
-  const query = `SELECT * FROM article WHERE seq = '${seq}'`;
-  const article = await 디비실행(query);
-  // console.log(article);
+app.post("/reply", async (req, res) => {
+  const { loginUser } = req.session;
+  const { seq, replyText } = req.body;
 
-  res.send(article[0]);
+  const result = {
+    code: "success",
+    message: "댓글이 작성되었습니다.",
+  };
+
+  console.log(seq, replyText);
+
+  if (replyText === 0) {
+    result.code = "error";
+    result.message = "댓글 입력해주세요.";
+  }
+
+  if (result.code === "error") {
+    res.send(result);
+    return;
+  }
+
+  const query = `INSERT INTO reply(body, article_seq, user_seq) VALUES('${replyText}', '${seq}', '${loginUser.seq}')`;
+  // console.log(query);
+  await 디비실행(query);
+  res.send(result);
 });
 
 // 게시글 작성

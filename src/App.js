@@ -191,7 +191,7 @@ function Article() {
   /**게시글 상세정보 가져오기 */
   const 게시판상세정보가져오기 = async () => {
     await axios({
-      url: "http://localhost:4000/article/_row",
+      url: "http://localhost:4000/article_row",
       params: {
         seq: seq,
       },
@@ -205,11 +205,47 @@ function Article() {
     게시판상세정보가져오기();
   }, []);
 
+  // 댓글 불러오고 저장하기
+  // article_row 서버 호출시 댓글 정보까지 같이 가져오게 하기
+  // state에 댓글 저장, 서버 요청, 댓글 테이블에 등록
+  const [replyText, setReplyText] = React.useState("");
+  const 댓글정보저장 = (event) => {
+    setReplyText(event.target.value);
+  };
+
+  const 댓글쓰기 = async () => {
+    await axios({
+      url: "http://localhost:4000/reply",
+      method: "POST",
+      data: {
+        replyText: replyText,
+        seq: seq,
+      },
+    }).then((res) => {});
+  };
+
   return (
     <div className="ui-wrap">
-      게시판 상세정보
-      <h2>{article.title}</h2>
-      <h3>{article.body}</h3>
+      <div className="ui-body-wrap">
+        <h2>{article.title}</h2>
+        <div className="ui-body">
+          <p>{article.body}</p>
+        </div>
+
+        <h3>댓글</h3>
+
+        <div className="ui-reply">
+          <div>댓글이 없습니다</div>
+        </div>
+
+        <form className="ui-reply-form">
+          <textarea onChange={댓글정보저장}></textarea>
+          {/* {replyText} 댓글정보 저장되는지 확인*/}
+          <button className="ui-blue-button" onClick={댓글쓰기}>
+            댓글쓰기
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
@@ -224,7 +260,7 @@ function Main() {
    * useState(가져온거 저장), useEffect(서버에서 가져오기) 활용
    */
 
-  const [article, setArticle] = React.useState({});
+  const [article, setArticle] = React.useState([]);
 
   const 게시글정보가져오기 = async () => {
     await axios({
@@ -247,11 +283,11 @@ function Main() {
 
   return (
     <div className="ui-wrap">
-      {/* <h2>{loginUser.nickname} 님. 안녕하세요.</h2> */}
-      <button className="button" onClick={글등록페이지이동}>
-        글 등록하기
+      {/* <h2>{loginUser.nickname}님 안녕하세요!</h2> */}
+      <button className="ui-green-button" onClick={글등록페이지이동}>
+        글등록
       </button>
-      <table>
+      <table className="ui-table">
         <thead>
           <tr>
             <th>제목</th>

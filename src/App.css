@@ -1,32 +1,88 @@
-table {
+* {
+  box-sizing: border-box;
+  padding: 0px;
+  margin: 0px;
+}
+
+button {
+  outline: none;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.ui-table {
   width: 100%;
   background-color: #fff;
-  border: 1px solid rgb(247, 245, 225);
-  margin: 10px;
+  margin-top: 12px;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-collapse: separate;
+  border-spacing: 0;
+  color: rgba(0, 0, 0, 0.87);
 }
 
-th {
-  padding: 10px;
+.ui-table thead th {
+  text-align: left;
+  padding: 12px;
 }
 
-td {
-  padding: 5px;
-  cursor: pointer;
+.ui-table tbody td {
   border-top: 1px solid silver;
+  padding: 12px;
 }
 
-tr:hover {
-  background-color: beige;
+.ui-table tbody tr {
+  cursor: pointer;
+}
+
+.ui-table tbody tr:hover {
+  background-color: #e0e0e0;
 }
 
 .ui-wrap {
-  padding: 20px;
+  padding: 24px;
 }
 
-.button {
-  background-color: bisque;
-  border-radius: 3px;
-  border: none;
-  padding: 10px;
+.ui-green-button {
+  background-color: #21ba45;
+  color: #fff;
   font-weight: bold;
+  padding: 8px 22px;
+}
+
+.ui-body-wrap {
+  padding: 24px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+.ui-body {
+  margin-top: 12px;
+  min-height: 400px;
+}
+
+.ui-reply {
+  border-top: 1px solid #bdbdbd;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.ui-reply-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+}
+
+textarea {
+  padding: 12px;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  min-height: 200px;
+}
+
+.ui-blue-button {
+  color: #fff;
+  background-color: #2185d0;
+  padding: 12px;
+  margin-top: 12px;
 }
